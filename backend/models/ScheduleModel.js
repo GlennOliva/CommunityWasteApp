@@ -6,6 +6,20 @@ exports.getSchedules = (admin_id ,callback) => {
   db.query(sql, [admin_id], callback);
 };
 
+exports.getAllSchedules = (callback) => {
+  const sql = 'SELECT * FROM tbl_schedule';
+  db.query(sql, (err, results) => {
+    if (err) {
+      console.error('DB error:', err);
+      return callback(err);
+    }
+    console.log('DB results:', results);  // Add this line to see what data is returned
+    callback(null, results);
+  });
+};
+
+
+
 // 🔹 Get a single schedule by ID
 exports.getScheduleById = (scheduleId, callback) => {
   const sql = 'SELECT * FROM tbl_schedule WHERE id = ?';

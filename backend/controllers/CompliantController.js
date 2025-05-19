@@ -11,6 +11,26 @@ exports.getComplaints = (req, res) => {
 };
 
 
+
+exports.getComplaintsByUserId = (req, res) => {
+    const userId = req.params.user_id;
+
+    Complaint.getByUserId(userId, (err, result) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        if (result.length === 0) {
+            return res.status(404).json({ message: 'No complaints found for this user' });
+        }
+
+        res.status(200).json(result);
+    });
+};
+
+
+
 // 🔍 Get Complaint by ID
 exports.getComplaintById = (req, res) => {
     const complaintId = req.params.id;
@@ -32,7 +52,7 @@ exports.getComplaintById = (req, res) => {
 // ➕ Add Complaint
 exports.addComplaint = (req, res) => {
     try {
-        const { user_id, admin_id, compliant_category, details, status } = req.body;
+        const { user_id, compliant_category, details, status } = req.body;
         const image_attach = req.file ? req.file.filename : null;
 
         if (!user_id || !compliant_category || !details || !status) {
@@ -41,7 +61,6 @@ exports.addComplaint = (req, res) => {
 
         const complaintData = {
             user_id,
-            admin_id,
             compliant_category,
             details,
             status,

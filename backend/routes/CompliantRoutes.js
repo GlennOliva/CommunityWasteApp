@@ -7,7 +7,7 @@ router.post('/add_compliant', upload.single('image_attach'), controller.addCompl
 
 router.get('/', controller.getComplaints);
 
-
+ router.get('/user_compliant/:user_id', controller.getComplaintsByUserId); // 👈 this line
     router.get('/:id', controller.getComplaintById); // 👈 this line
 
 // 🟢 Update user

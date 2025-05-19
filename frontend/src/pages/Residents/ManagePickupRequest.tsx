@@ -1,10 +1,11 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../css/style.css';
-import Sidebar from '../../components/Admin/Sidebar';
-import Navbar from '../../components/Admin/Navbar';
+import Sidebar from '../../components/Residents/Sidebar';
+import Navbar from '../../components/Residents/Navbar';
 import { Snackbar, Alert } from '@mui/material';
-import UpdatePickupRequestModal from '../../components/Admin/UpdatePickupRequestModal';
+import UpdatePickupRequestModal from '../../components/Residents/UpdatePickupRequestModal';
+import AddPickupRequestModal from '../../components/Residents/AddPickupRequestModal';
 
 
 interface PickupRequest {
@@ -23,6 +24,8 @@ const ManagePickupRequest = () => {
   const [pickup_request, setPickupRequest] = useState<PickupRequest[]>([]);
   const [filteredPickupRequest, setFilteredPickupRequest] = useState<PickupRequest[]>([]); // For filtered results
    const [selectedPickupRequest, setSelectedPickupRequest] = useState<PickupRequest | null>(null);
+   const user_id = localStorage.getItem('user_id') || '' ;
+     const [isAddPickupRequestOpen, setIsAddPickupRequestOpen] = useState(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -40,13 +43,16 @@ const ManagePickupRequest = () => {
   const apiUrl = import.meta.env.VITE_API_URL;
   
 useEffect(() => {
-  axios.get(`${apiUrl}/api/pickup_request`)
+  if (!user_id) return;  // skip fetching if no user_id
+
+  axios.get(`${apiUrl}/api/pickup_request/user/${user_id}`)
     .then(res => {
       setPickupRequest(res.data);
-      setFilteredPickupRequest(res.data); // Initially show all expenses
+      setFilteredPickupRequest(res.data);
     })
     .catch(err => console.error('Failed to fetch pickup_request:', err));
-}, [apiUrl]);
+}, [apiUrl, user_id]);
+
 
 
   const handleUpdate = (pick_up_requestId: number) => {
@@ -139,6 +145,13 @@ useEffect(() => {
               />
             </div>
 
+              <div className="action-buttons">
+              <button onClick={() => setIsAddPickupRequestOpen(true)} className="btn add-btn">
+                Add Pickup Request
+              </button>
+            </div> 
+            
+
 
             <table className="efinance-table">
               <thead>
@@ -164,7 +177,7 @@ useEffect(() => {
 <td>{new Date(pickup_request.schedule_date).toISOString().split('T')[0]}</td>
 <td>{new Date(`1970-01-01T${pickup_request.schedule_time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</td>
                       <td>{pickup_request.notes}</td>
-              <td>
+                 <td>
   <span
     style={{
       padding: '4px 8px',
@@ -292,7 +305,7 @@ useEffect(() => {
         </Alert>
       </Snackbar>
 
-
+   {isAddPickupRequestOpen && <AddPickupRequestModal onClose={() => setIsAddPickupRequestOpen(false)} />}
       {selectedPickupRequest && (
         <UpdatePickupRequestModal onClose={() => setSelectedPickupRequest(null)} pickup_request={selectedPickupRequest} />
       )}

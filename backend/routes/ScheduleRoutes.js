@@ -4,6 +4,8 @@ const controller = require('../controllers/ScheduleController.js');
 // insert schedule
 router.post('/add_schedule', controller.addSchedule);
 
+    router.get('/view_collection', controller.getAllSchedule); // 👈 this line
+
   router.get('/:admin_id', controller.getSchedule); // 👈 this line
 
     router.get('/:id', controller.getScheduleById); // 👈 this line

@@ -160,7 +160,28 @@ useEffect(() => {
                       <td>{compliant.compliant_category}</td>
                       <td>{compliant.details}</td>
                       <td style={{width:'100px'}}><img src={`${apiUrl}/uploads/${compliant.image_attach}`} alt="Profile" /></td>
-                         <td>{compliant.status}</td>
+                    <td>
+  <span
+    style={{
+      padding: '4px 8px',
+      borderRadius: '4px',
+      fontWeight: 'bold',
+      color: 'white',
+      backgroundColor:
+        compliant.status === 'Completed'
+          ? 'green'
+          : compliant.status === 'Pending'
+          ? 'orange'
+          : compliant.status === 'Ongoing'
+          ? 'goldenrod'
+          : compliant.status === 'Cancelled'
+          ? 'red'
+          : 'gray',
+    }}
+  >
+    {compliant.status}
+  </span>
+</td>
                       <td>{new Date(compliant.created_at).toLocaleDateString()}</td>
                       <td>
                              <button onClick={() => handleUpdate(compliant.id)} className="btn update-btn">

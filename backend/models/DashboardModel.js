@@ -16,6 +16,24 @@ exports.getTotalCompliantsByID = (callback) => {
     });
 };
 
+
+exports.getTotalRequestByUserID = (user_id, callback) => {
+    const sql = `SELECT COUNT(*) AS no_request FROM tbl_pickup_request WHERE user_id = ?`;
+    db.query(sql, [user_id], (error, results) => {
+        if (error) return callback(error, null);
+        callback(null, results[0]);
+    });
+};
+
+exports.getTotalComplaintsByUserID = (user_id, callback) => {
+    const sql = `SELECT COUNT(*) AS no_complaints FROM tbl_complaints WHERE user_id = ?`;
+    db.query(sql, [user_id], (error, results) => {
+        if (error) return callback(error, null);
+        callback(null, results[0]);
+    });
+};
+
+
 exports.getTotalRequestByID = ( callback) => {
     const sql = `SELECT COUNT(*) AS no_pickup_request FROM tbl_pickup_request`;
     db.query(sql, (error, results) => {

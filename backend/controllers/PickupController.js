@@ -8,13 +8,32 @@ exports.getPickupRequests = (req, res) => {
     });
 };
 
-// 🔍 Get a specific pickup request by ID
-exports.getPickupRequestById = (req, res) => {
-    const requestId = req.params.id;
+// 🔍 Get all pickup requests by User ID
+exports.getPickupRequestByUserId = (req, res) => {
+  const userId = req.params.user_id;
 
-    PickupRequest.getPickupRequestById(requestId, (err, result) => {
+  PickupRequest.getPickupRequestsByUserId(userId, (err, results) => {
+    if (err) {
+      console.error('Database error:', err);
+      return res.status(500).json({ error: 'Internal server error' });
+    }
+
+    if (results.length === 0) {
+      return res.status(404).json({ message: 'No pickup requests found for this user' });
+    }
+
+    res.status(200).json(results);
+  });
+};
+
+
+// 📄 Get a pickup request by ID
+exports.getPickupRequestById = (req, res) => {
+    const id = req.params.id;
+
+    PickupRequest.getPickupRequestById(id, (err, result) => {
         if (err) {
-            console.error('Database error:', err);
+            console.error('Error fetching pickup request:', err);
             return res.status(500).json({ error: 'Internal server error' });
         }
 
@@ -22,9 +41,10 @@ exports.getPickupRequestById = (req, res) => {
             return res.status(404).json({ message: 'Pickup request not found' });
         }
 
-        res.status(200).json(result[0]);
+        res.status(200).json(result[0]); // Return the first matching row
     });
 };
+
 
 // ➕ Add a pickup request
 exports.addPickupRequest = (req, res) => {

@@ -30,9 +30,10 @@ const Sidebar: React.FC = () => {
     };
   }, []);
 
+
   const menuItems = [
     { path: "/user/dashboard", name: "Dashboard", icon: "bxs-dashboard" },
-    { path: "/user/manage_collection", name: "Collection Schedule", icon: "bx-calendar" },
+    { path: "/user/collection_schedule", name: "Collection Schedule", icon: "bx-calendar" },
     { path: "/user/manage_pickup_request", name: "Manage Pickup Req", icon: "bx-package" },
     { path: "/user/manage_compliant", name: "Manage Compliants", icon: "bx-user-voice" },
     { path: "/user/track_request", name: "Track Request", icon: "bx-receipt" },

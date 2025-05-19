@@ -8,6 +8,13 @@ exports.getSchedule = (req, res) => {
     });
 };
 
+exports.getAllSchedule = (req, res) => {
+    Schedule.getAllSchedules((err, results) => {
+        if (err) return res.status(500).json({ error: err });
+        res.json(results);
+    });
+};
+
 
 
 // 🔍 Get a specific schedule by ID

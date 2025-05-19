@@ -10,6 +10,7 @@ const scheduleRoutes = require('./routes/ScheduleRoutes.js');
 const pickuprequestRoutes = require('./routes/PickupRoutes.js');
 const compliantsRoutes = require('./routes/CompliantRoutes.js');
 const DashboardRoutes = require('./routes/DashboardRoutes.js');
+const trackrequestRoutes = require('./routes/TrackRequestRoutes.js');
 
 
 app.use(cors()); // ✅ Allow all origins (for development)
@@ -22,6 +23,7 @@ app.use('/api/user', userRoutes)
 app.use('/api/schedule', scheduleRoutes)
 app.use('/api/pickup_request',pickuprequestRoutes)
 app.use('/api/compliant', compliantsRoutes)
+app.use('/api/track_request', trackrequestRoutes)
 app.use(DashboardRoutes); // no '/api' prefix
 
 

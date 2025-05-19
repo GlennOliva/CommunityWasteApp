@@ -15,6 +15,23 @@ LEFT JOIN
 };
 
 
+exports.getByUserId = (userId, callback) => {
+  const sql = `
+    SELECT 
+      c.*, 
+      CONCAT(u.first_name, ' ', u.last_name) AS full_name
+    FROM 
+      tbl_complaints c
+    LEFT JOIN 
+      tbl_user u ON c.user_id = u.id
+    WHERE 
+      c.user_id = ?
+  `;
+  db.query(sql, [userId], callback);
+};
+
+
+
 // 🔹 Get a single complaint by ID
 exports.getById = (id, callback) => {
   const sql = 'SELECT * FROM tbl_complaints WHERE id = ?';

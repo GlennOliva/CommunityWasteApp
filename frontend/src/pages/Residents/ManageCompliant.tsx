@@ -1,28 +1,28 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 import '../../css/style.css';
-import Sidebar from '../../components/Admin/Sidebar';
-import Navbar from '../../components/Admin/Navbar';
+import Sidebar from '../../components/Residents/Sidebar';
+import Navbar from '../../components/Residents/Navbar';
 import { Snackbar, Alert } from '@mui/material';
-import UpdatePickupRequestModal from '../../components/Admin/UpdatePickupRequestModal';
+import UpdateComplaintModal from '../../components/Residents/UpdateComplaintModal';
+import AddComplaintModal from '../../components/Residents/AddComplaintModal';
 
-
-interface PickupRequest {
+interface Compliant {
   id: number;
   user_id: number;
   full_name: string;
-  request_type: string;
-  schedule_date: string;
-  schedule_time: string;
+  compliant_category: string;
+  details: string;
+  image_attach: string;
   status: string;
-  notes: string;
   created_at: string;
 }
 
-const ManagePickupRequest = () => {
-  const [pickup_request, setPickupRequest] = useState<PickupRequest[]>([]);
-  const [filteredPickupRequest, setFilteredPickupRequest] = useState<PickupRequest[]>([]); // For filtered results
-   const [selectedPickupRequest, setSelectedPickupRequest] = useState<PickupRequest | null>(null);
+const ManageCompliant = () => {
+  const [compliant, setCompliant] = useState<Compliant[]>([]);
+  const [filteredCompliant, setFilteredCompliant] = useState<Compliant[]>([]); // For filtered results
+   const [selectedCompliant, setSelectedCompliant] = useState<Compliant | null>(null);
+      const [isAddCompliantOpen, setIsCompliantOpen] = useState(false);
   const [snackbar, setSnackbar] = useState<{
     open: boolean;
     message: string;
@@ -36,35 +36,40 @@ const ManagePickupRequest = () => {
   const [itemsPerPage] = useState(5);
   const [searchTerm, setSearchTerm] = useState('');
 
-
+const user_id = localStorage.getItem('user_id');
   const apiUrl = import.meta.env.VITE_API_URL;
   
 useEffect(() => {
-  axios.get(`${apiUrl}/api/pickup_request`)
+  if (!user_id) {
+    console.error("User ID not found in localStorage.");
+    return;
+  }
+
+  axios.get(`${apiUrl}/api/compliant/user_compliant/${user_id}`)
     .then(res => {
-      setPickupRequest(res.data);
-      setFilteredPickupRequest(res.data); // Initially show all expenses
+      setCompliant(res.data);
+      setFilteredCompliant(res.data);
     })
-    .catch(err => console.error('Failed to fetch pickup_request:', err));
-}, [apiUrl]);
+    .catch(err => console.error('Failed to fetch compliant:', err));
+}, [apiUrl, user_id]);
 
 
-  const handleUpdate = (pick_up_requestId: number) => {
-    const pickuprequestToUpdate = pickup_request.find((pickup_request) => pickup_request.id === pick_up_requestId);
-    setSelectedPickupRequest(pickuprequestToUpdate || null);
+  const handleUpdate = (compliantId: number) => {
+    const compliantToUpdate = compliant.find((compliant) => compliant.id === compliantId);
+    setSelectedCompliant(compliantToUpdate || null);
   };
 
 
 
-  const handleDelete = (pick_up_requestId: number) => {
-    const isConfirmed = window.confirm('Are you sure you want to delete this pickup request?');
+  const handleDelete = (compliantId: number) => {
+    const isConfirmed = window.confirm('Are you sure you want to delete this compliant?');
     if (isConfirmed) {
-      axios.delete(`${apiUrl}/api/pickup_request/${pick_up_requestId}`)
+      axios.delete(`${apiUrl}/api/compliant/${compliantId}`)
         .then(() => {
-          setPickupRequest(pickup_request.filter((pickup_request) => pickup_request.id !== pick_up_requestId));
+          setCompliant(compliant.filter((compliant) => compliant.id !== compliantId));
           setSnackbar({
             open: true,
-            message: "Pickup Request deleted successfully!",
+            message: "Compliant deleted successfully!",
             severity: "success",
           });
   
@@ -77,7 +82,7 @@ useEffect(() => {
           console.error('Failed to delete resident:', err);
           setSnackbar({
             open: true,
-            message: 'Failed to delete pickup request. Please try again.',
+            message: 'Failed to delete resident. Please try again.',
             severity: 'error',
           });
         });
@@ -99,19 +104,19 @@ useEffect(() => {
     setSearchTerm(value);
 
     if (value) {
-      const filtered = pickup_request.filter(pickup_request =>
-        pickup_request.request_type.toLowerCase().includes(value.toLowerCase())
+      const filtered = compliant.filter(compliant =>
+        compliant.compliant_category.toLowerCase().includes(value.toLowerCase())
       );
-      setFilteredPickupRequest(filtered);
+      setFilteredCompliant(filtered);
     } else {
-      setFilteredPickupRequest(pickup_request); // Show all expenses if search is empty
+      setFilteredCompliant(compliant); // Show all expenses if search is empty
     }
   };
 
   // Pagination logic
-  const indexOfLastPickupRequest = currentPage * itemsPerPage;
-  const indexOfFirstPickupRequest = indexOfLastPickupRequest - itemsPerPage;
-  const currentPickupRequest = filteredPickupRequest.slice(indexOfFirstPickupRequest, indexOfLastPickupRequest);
+  const indexOfLastCompliant = currentPage * itemsPerPage;
+  const indexOfFirstCompliant = indexOfLastCompliant - itemsPerPage;
+  const currentCompliant = filteredCompliant.slice(indexOfFirstCompliant, indexOfLastCompliant);
 
   const paginate = (pageNumber: number) => setCurrentPage(pageNumber);
 
@@ -121,11 +126,11 @@ useEffect(() => {
       <section id="content">
         <Navbar />
         <main>
-          <h1 className="title">Manage Pickup Request</h1>
+          <h1 className="title">Manage Compliant</h1>
           <ul className="breadcrumbs">
-            <li><a href="#">Pickup Request</a></li>
+            <li><a href="#">Compliants</a></li>
             <li className="divider">/</li>
-            <li><a href="#" className="active">Manage Pickup Request</a></li>
+            <li><a href="#" className="active">Manage Compliants</a></li>
           </ul>
 
           <div className="efinance-table-container">
@@ -139,32 +144,35 @@ useEffect(() => {
               />
             </div>
 
+              <div className="action-buttons">
+              <button onClick={() => setIsCompliantOpen(true)} className="btn add-btn">
+                Add Compliant
+              </button>
+            </div> 
 
             <table className="efinance-table">
               <thead>
                 <tr>
                   <th>ID</th>
                   <th>Full Name</th>
-                  <th>Request Name</th>
-                  <th>Schedule Date</th>
-                  <th>Schedule Time</th>
-                  <th>Notes</th>
+                  <th>Complaint Name</th>
+                  <th>Details</th>
+                  <th>Image</th>
                   <th>Status</th>
                   <th>Created_at</th>
                   <th>Actions</th>
                 </tr>
               </thead>
               <tbody>
-                {currentPickupRequest.length > 0 ? (
-                  currentPickupRequest.map((pickup_request) => (
-                    <tr key={pickup_request.id}>
-                      <td>{pickup_request.id}</td>
-                      <td>{pickup_request.full_name}</td>
-                      <td>{pickup_request.request_type}</td>
-<td>{new Date(pickup_request.schedule_date).toISOString().split('T')[0]}</td>
-<td>{new Date(`1970-01-01T${pickup_request.schedule_time}`).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', hour12: true })}</td>
-                      <td>{pickup_request.notes}</td>
-              <td>
+                {currentCompliant.length > 0 ? (
+                  currentCompliant.map((compliant) => (
+                    <tr key={compliant.id}>
+                      <td>{compliant.id}</td>
+                      <td>{compliant.full_name}</td>
+                      <td>{compliant.compliant_category}</td>
+                      <td>{compliant.details}</td>
+                      <td style={{width:'100px'}}><img src={`${apiUrl}/uploads/${compliant.image_attach}`} alt="Profile" /></td>
+             <td>
   <span
     style={{
       padding: '4px 8px',
@@ -172,26 +180,26 @@ useEffect(() => {
       fontWeight: 'bold',
       color: 'white',
       backgroundColor:
-        pickup_request.status === 'Completed'
+        compliant.status === 'Completed'
           ? 'green'
-          : pickup_request.status === 'Pending'
+          : compliant.status === 'Pending'
           ? 'orange'
-          : pickup_request.status === 'Ongoing'
+          : compliant.status === 'Ongoing'
           ? 'goldenrod'
-          : pickup_request.status === 'Cancelled'
+          : compliant.status === 'Cancelled'
           ? 'red'
           : 'gray',
     }}
   >
-    {pickup_request.status}
+    {compliant.status}
   </span>
 </td>
-                      <td>{new Date(pickup_request.created_at).toLocaleDateString()}</td>
+                      <td>{new Date(compliant.created_at).toLocaleDateString()}</td>
                       <td>
-                             <button onClick={() => handleUpdate(pickup_request.id)} className="btn update-btn">
+                             <button onClick={() => handleUpdate(compliant.id)} className="btn update-btn">
                           Update
                         </button>
-                        <button onClick={() => handleDelete(pickup_request.id)} className="btn delete-btn">
+                        <button onClick={() => handleDelete(compliant.id)} className="btn delete-btn">
                           Delete
                         </button>
                       </td>
@@ -199,7 +207,7 @@ useEffect(() => {
                   ))
                 ) : (
                   <tr>
-                    <td colSpan={7}>No Pickup Request found.</td>
+                    <td colSpan={7}>No compliant found.</td>
                   </tr>
                 )}
               </tbody>
@@ -217,7 +225,7 @@ useEffect(() => {
     gap: '10px'
   }}
 >
-  <span>Showing {currentPickupRequest.length} entries</span>
+  <span>Showing {currentCompliant.length} entries</span>
   <div
     className="efinance-pagination"
     style={{
@@ -239,7 +247,7 @@ useEffect(() => {
     >
       Previous
     </button>
-    {[...Array(Math.ceil(filteredPickupRequest.length / itemsPerPage))].map((_, index) => (
+    {[...Array(Math.ceil(filteredCompliant.length / itemsPerPage))].map((_, index) => (
       <button
         key={index}
         onClick={() => paginate(index + 1)}
@@ -258,7 +266,7 @@ useEffect(() => {
     ))}
     <button
       onClick={() => paginate(currentPage + 1)}
-      disabled={currentPage === Math.ceil(filteredPickupRequest.length / itemsPerPage)}
+      disabled={currentPage === Math.ceil(filteredCompliant.length / itemsPerPage)}
       style={{
         margin: '0 4px',
         padding: '6px 10px',
@@ -292,12 +300,12 @@ useEffect(() => {
         </Alert>
       </Snackbar>
 
-
-      {selectedPickupRequest && (
-        <UpdatePickupRequestModal onClose={() => setSelectedPickupRequest(null)} pickup_request={selectedPickupRequest} />
+   {isAddCompliantOpen && <AddComplaintModal onClose={() => setIsCompliantOpen(false)} />}
+      {selectedCompliant && (
+        <UpdateComplaintModal onClose={() => setSelectedCompliant(null)} compliant={selectedCompliant} />
       )}
     </div>
   );
 };
 
-export default ManagePickupRequest;
+export default ManageCompliant;

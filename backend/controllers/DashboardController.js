@@ -36,6 +36,44 @@ exports.getTotalRequestByID = (req, res) => {
   });
 };
 
+
+
+exports.getTotalComplaintsByUserID = (req, res) => {
+    const user_id = req.user?.id || req.params.user_id || req.body.user_id;
+
+    if (!user_id) {
+        return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    Dashboard.getTotalComplaintsByUserID(user_id, (err, result) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        res.status(200).json(result);
+    });
+};
+
+exports.getTotalRequestsByUserID = (req, res) => {
+    const user_id = req.user?.id || req.params.user_id || req.body.user_id;
+
+    if (!user_id) {
+        return res.status(400).json({ error: 'User ID is required' });
+    }
+
+    Dashboard.getTotalRequestByUserID(user_id, (err, result) => {
+        if (err) {
+            console.error('Database error:', err);
+            return res.status(500).json({ error: 'Internal server error' });
+        }
+
+        res.status(200).json(result);
+    });
+};
+
+
+
 // 🔍 Get total number of schedules
 exports.getCountScheduleByID = (req, res) => {
   Dashboard.getCountScheduleByID((err, result) => {
