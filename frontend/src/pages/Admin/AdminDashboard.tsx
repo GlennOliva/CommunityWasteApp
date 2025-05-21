@@ -126,7 +126,7 @@ const AdminDashboard = () => {
 
   <div className="content-data">
     <div className="head">
-      <h3>BAR CHART EXPENSES PER MONTH</h3>
+      <h3>BAR CHART COMPLIANTS PER MONTH</h3>
       <div className="menu">
         <i className='bx bx-dots-horizontal-rounded icon'></i>
         <ul className="menu-link">

@@ -226,7 +226,7 @@ const Register = () => {
             </button>
 
             <h1 style={{ paddingTop: "10px", fontSize: "14px" }}>
-              Have an Account? <Link to="/login">Login Here!</Link>
+              Have an Account? <Link to="/">Login Here!</Link>
             </h1>
           </form>
         </div>
