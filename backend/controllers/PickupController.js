@@ -121,7 +121,7 @@ exports.addPickupRequest = (req, res) => {
 // ✏️ Update pickup request
 exports.updatePickupRequest = (req, res) => {
     const id = req.params.id;
-    const {
+    let {
         user_id,
         request_type,
         schedule_date,
@@ -129,6 +129,11 @@ exports.updatePickupRequest = (req, res) => {
         notes,
         status
     } = req.body;
+
+    // ✅ Convert schedule_date to 'YYYY-MM-DD' format
+    if (schedule_date) {
+        schedule_date = new Date(schedule_date).toISOString().slice(0, 10); // '2025-05-07'
+    }
 
     const updatedData = {
         user_id,
@@ -152,6 +157,7 @@ exports.updatePickupRequest = (req, res) => {
         res.json({ message: 'Pickup request updated successfully!' });
     });
 };
+
 
 // ❌ Delete pickup request
 exports.deletePickupRequest = (req, res) => {
